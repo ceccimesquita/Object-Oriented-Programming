@@ -33,9 +33,11 @@ public:
     Shape(string name){
         this->name = name;
     }
-    virtual string getName() = 0;
+    string getName(){
+        return name;
+    }
 
-    virtual bool insside(Point2D p) = 0;
+    virtual bool inside(Point2D p) = 0;
 
     virtual double getArea() = 0;
 
@@ -56,7 +58,7 @@ public:
         return Shape::name;
     }
 
-    bool insside(Point2D p){
+    bool inside(Point2D p){
         return Cals::distance(center, p) <= radius;
     }
 
@@ -82,7 +84,9 @@ public:
         this->topLeft = topLeft;
         this->bottomRight = bottomRight;
     }
-
+    string getName(){
+        return Shape::name;
+    }
     bool inside (Point2D p){
         return p.x >= topLeft.x && p.x <= bottomRight.x && p.y <= topLeft.y && p.y >= bottomRight.y;
     }
@@ -107,14 +111,14 @@ std::ostream& operator<<(std::ostream& os, Circle p) {
     return os << p.toString();
 }
 
-std::ostream& operator<<(std::ostream& os, Rectangle p) {
-    return os << p.toString();
-}
+// std::ostream& operator<<(std::ostream& os, Rectangle p) {
+//     return os << p.toString();
+// }
 
 
 
 int main() {
-    vector<Shape*> shapes;
+    vector<shared_ptr<Shape>> shapes;
     while(true) {
         auto line = fn::input();
         auto args = fn::split(line, ' ');
@@ -124,10 +128,25 @@ int main() {
             break;
         }
         else if(args[0] == "Circle"){
-            Circle circle({stod(args[1]), stod(args[2])}, stod(args[3]));
+            auto x = number(args[1]);
+            auto y = number(args[2]);
+            auto r = number(args[3]);
+
+            shapes.push_back(make_shared<Circle>(Point2D{x, y}, r));
         }
         else if(args[0] ==  "show"){
-            write(circle.toString());
+            write(join(shapes, "\n"));
+        }
+        else if(args[0] == "rect"){
+            auto p1 = Point2D{number(args[1]), number(args[2])};
+            auto p2 = Point2D{number(args[3]), number(args[4])};
+            shapes.push_back(make_shared<Rectangle>(p1, p2));
+        }
+        else if(args[0] == "info"){
+            for(auto shape : shapes){
+                cout << shape->getName() << ":" << fixed <<  " A=" << setprecision(2) << shape->getArea() << " P=" << setprecision(2) << shape->getPerimeter() << endl;
+            }
+
         }
     }
 }
