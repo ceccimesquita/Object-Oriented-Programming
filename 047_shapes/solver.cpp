@@ -5,6 +5,9 @@
 #include <fn.hpp>
 #include <math.h>
 
+#include <limits>
+#include <numbers>
+
 using namespace std;
 using namespace fn;
 
@@ -14,7 +17,7 @@ public:
     double y;
     string toString(){
         stringstream ss;
-        ss << "(" << setprecision(2) << fixed << to_string(x) << ", " << to_string(y) << ")";
+        ss << "(" << setprecision(2) << fixed << x  << ", " << y << ")";
         return ss.str();
     }
 };
@@ -75,7 +78,7 @@ public:
 
     string toString(){
         stringstream ss;
-        ss << getName() << " " << center.toString() << ", " << setprecision(2) << fixed << to_string(radius);
+        ss << getName() << ": C=" << center.toString() << fixed << setprecision(2) << ", R=" << radius << fixed << setprecision(2) ;
         return ss.str();
     }
 };
@@ -107,60 +110,96 @@ public:
 
     string toString(){
         stringstream ss;
-        ss << getName() << " " << topLeft.toString() << ", " << bottomRight.toString();
+        ss << getName() << ": P1=" << topLeft.toString() << " P2=" << bottomRight.toString();
         return ss.str();
     }
 
 };
 
-std::ostream& operator<<(std::ostream& os, Rectangle& p) {
-    return os << p.toString();
-}
+// std::ostream& operator<<(std::ostream& os, Rectangle& p) {
+//     return os << p.toString();
+// }
 
-std::ostream& operator<<(std::ostream& os, Circle& p) {
-    return os << p.toString();
-}
+// std::ostream& operator<<(std::ostream& os, Circle& p) {
+//     return os << p.toString();
+// }
 
 std::ostream& operator<<(std::ostream& os, Shape& p) {
     return os << p.toString();
 }
 
-int main() {
-    vector<shared_ptr<Shape>> shapes;
-    while(true) {
-        auto line = fn::input();
-        auto args = fn::split(line, ' ');
-        fn::write("$" + line);
+// int main() {
+//     vector<shared_ptr<Shape>> shapes;
+//     while(true) {
+//         auto line = fn::input();
+//         auto args = fn::split(line, ' ');
+//         fn::write("$" + line);
         
-        if(args[0] ==  "end" ){
-            break;
-        }
-        else if(args[0] == "Circle"){
-            auto x = number(args[1]);
-            auto y = number(args[2]);
-            auto r = number(args[3]);
+//         if(args[0] ==  "end" ){
+//             break;
+//         }
+//         else if(args[0] == "Circle"){
+//             auto x = number(args[1]);
+//             auto y = number(args[2]);
+//             auto r = number(args[3]);
 
-            shapes.push_back(make_shared<Circle>(Point2D{x, y}, r));
+//             shapes.push_back(make_shared<Circle>(Point2D{x, y}, r));
+//         }
+//         else if(args[0] ==  "show"){
+//             shapes | fn::MAP([](auto shape){ return shape->toString(); })
+//              | fn::JOIN("\n")
+//              | fn::WRITE();
+//         }
+//         else if(args[0] == "rect"){
+//             auto p1 = Point2D{number(args[1]), number(args[2])};
+//             auto p2 = Point2D{number(args[3]), number(args[4])};
+//             shapes.push_back(make_shared<Rectangle>(p1, p2));
+//         }
+//         else if(args[0] == "info"){
+//             for(auto shape : shapes){
+//                 cout << shape->getName() << ":" << fixed <<  " A=" << setprecision(2) << shape->getArea() << " P=" << setprecision(2) << shape->getPerimeter() << endl;
+//             }
+
+//         }
+//     }
+// }
+
+int main() {
+    std::vector<std::shared_ptr<Shape>> shapes;
+
+    while (true) {
+        auto line = fn::input();
+        auto args =  fn::split(line, ' ');
+        fn::write("$" + line);
+
+        if      (args[0] == "end")  { 
+            break;                                  
         }
-        else if(args[0] ==  "show"){
-            write(join(shapes, "\n"));
-        }
-        else if(args[0] == "rect"){
-            auto p1 = Point2D{number(args[1]), number(args[2])};
-            auto p2 = Point2D{number(args[3]), number(args[4])};
-            shapes.push_back(make_shared<Rectangle>(p1, p2));
-        }
-        else if(args[0] == "info"){
-            for(auto shape : shapes){
-                cout << shape->getName() << ":" << fixed <<  " A=" << setprecision(2) << shape->getArea() << " P=" << setprecision(2) << shape->getPerimeter() << endl;
+        else if (args[0] == "show") { 
+            for (auto shape : shapes) {
+                fn::write(shape->toString());
             }
-
+        }
+        else if (args[0] == "circle") { 
+            auto x = +args[1];
+            auto y = +args[2]; 
+            auto r = +args[3];
+            shapes.push_back(std::make_shared<Circle>(Point2D{x, y}, r));
+        }
+        else if (args[0] == "rect") { 
+            auto p1 = Point2D{+args[1], +args[2]};
+            auto p2 = Point2D{+args[3], +args[4]};
+            shapes.push_back(std::make_shared<Rectangle>(p1, p2));
+        }
+        else if (args[0] == "info") {
+            for (auto shape : shapes) {
+                printf(("%c : A=%.2f P=%.2f\n"), 
+                shape->getName(), shape->getArea(), shape->getPerimeter());
+            }
+        }
+        else {
+            fn::write("fail: invalid command");
         }
     }
 }
-
-
-
-
-
 
