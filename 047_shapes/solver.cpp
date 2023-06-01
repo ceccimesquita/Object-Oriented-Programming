@@ -33,29 +33,32 @@ public:
     Shape(string name){
         this->name = name;
     }
+
     string getName(){
         return name;
     }
 
-    virtual bool inside(Point2D p) = 0;
+    virtual bool inside(Point2D p) =0;
 
-    virtual double getArea() = 0;
+    virtual double getArea() =0;
 
-    virtual double getPerimeter() = 0;
+    virtual double getPerimeter() =0 ;
 
-    virtual string toString() = 0;
+    virtual string toString()=0;
 };
 
-class Circle : public Shape{
+class Circle : public Shape {
     Point2D center;
     double radius;
+
 public:
     Circle(Point2D center, double radius) : Shape("Circ"){
         this->center = center;
         this->radius = radius;
     }
+
     string getName(){
-        return Shape::name;
+        return this->name;
     }
 
     bool inside(Point2D p){
@@ -76,7 +79,9 @@ public:
         return ss.str();
     }
 };
-class Rectangle : public Shape{
+
+
+class Rectangle : public Shape {
     Point2D topLeft;
     Point2D bottomRight;
 public:
@@ -84,8 +89,9 @@ public:
         this->topLeft = topLeft;
         this->bottomRight = bottomRight;
     }
+    
     string getName(){
-        return Shape::name;
+        return this->name;
     }
     bool inside (Point2D p){
         return p.x >= topLeft.x && p.x <= bottomRight.x && p.y <= topLeft.y && p.y >= bottomRight.y;
@@ -107,15 +113,17 @@ public:
 
 };
 
-std::ostream& operator<<(std::ostream& os, Circle p) {
+std::ostream& operator<<(std::ostream& os, Rectangle& p) {
     return os << p.toString();
 }
 
-// std::ostream& operator<<(std::ostream& os, Rectangle p) {
-//     return os << p.toString();
-// }
+std::ostream& operator<<(std::ostream& os, Circle& p) {
+    return os << p.toString();
+}
 
-
+std::ostream& operator<<(std::ostream& os, Shape& p) {
+    return os << p.toString();
+}
 
 int main() {
     vector<shared_ptr<Shape>> shapes;
